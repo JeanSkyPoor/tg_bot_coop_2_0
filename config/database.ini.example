@@ -1,0 +1,6 @@
+[postgresql]
+host=YOUR HOST LIKE 122.100.303.29
+database=YOUR DATABASE NAME LIKE test_db
+user=YOUR USERNAME
+password=YOUR PASSWORD
+port=YOUR PORT
