@@ -14,7 +14,21 @@ bot =  Bot(token = TOKEN)
 
 
 
-@router.message()
+@router.message(
+        F.content_type.in_(
+            {
+                "text",
+                "photo",
+                "video",
+                "poll",
+                "document",
+                "sticker",
+                "audio",
+                "voice",
+                "animation"
+            }
+        )
+)
 async def insert_message(message: Message):
 
     if message.chat.id != CHAT_ID:
