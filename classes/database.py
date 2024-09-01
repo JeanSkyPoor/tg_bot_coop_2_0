@@ -39,10 +39,10 @@ class Database():
 
         with self.connect.cursor() as cur:
             
-            message = CustomMessage(message)
+            message = CustomMessage(message).data
 
             message = json.dumps(
-                message.__dict__,
+                message,
                 ensure_ascii = False
             )
             

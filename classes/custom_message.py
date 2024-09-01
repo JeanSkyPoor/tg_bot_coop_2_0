@@ -3,7 +3,6 @@ from classes.message_parsers import *
 
 
 
-
 class CustomMessage():
 
     def __init__(self, message: Message) -> None:
@@ -69,3 +68,11 @@ class CustomMessage():
             message,
             content_type
         ).data
+
+
+
+
+    @property
+    def data(self) -> dict:
+
+        return self.__dict__

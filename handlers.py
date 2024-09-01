@@ -5,13 +5,12 @@ from classes.database import Database
 from config.bot_config import TOKEN, CHAT_ID
 
 
-
-
 database = Database()
 
 router = Router()
 
 bot =  Bot(token = TOKEN)
+
 
 
 

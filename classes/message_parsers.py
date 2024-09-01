@@ -3,8 +3,6 @@ from datetime import timedelta
 import re
 
 
-
-
 class ParserMessageInfo():
 
     def __init__(self, message: Message) -> None:
@@ -36,6 +34,7 @@ class ParserMessageInfo():
 
 
 
+
     @property
     def data(self) -> dict:
 
@@ -48,7 +47,7 @@ class ParserMessageInfo():
         }
 
         return fast_dict
-    
+
 
 
 
@@ -77,7 +76,9 @@ class ParserForwardFromChat():
             self.attr["first_name"] = forward_from_chat.first_name
 
             self.attr["last_name"] = forward_from_chat.last_name
-        
+
+
+
 
     @property
     def data(self) -> dict| None:
@@ -114,11 +115,12 @@ class ParserForwardFromUser():
             self.attr["full_name"] = forward_from.full_name
 
 
+
+
     @property
     def data(self) -> dict|None:
 
         return self.attr or None
-    
 
 
 
@@ -143,7 +145,7 @@ class ParserText():
     def data(self) -> str|None:
 
         return self.text
-    
+
 
 
 
@@ -159,6 +161,8 @@ class ParserLinks():
         if text:
 
             self.links = re.findall("http:|https:[^\s]+", text)
+
+
 
     
     @property
@@ -187,6 +191,8 @@ class ParserWords():
             self.attr["word_count"] = len(self.attr["words"])
 
 
+
+
     @property
     def data(self) -> dict|None:
 
@@ -212,6 +218,7 @@ class ParserPhoto():
             self.attr["file_id"] = photo.file_id
 
             self.attr["unique_file_id"] = photo.file_unique_id
+
 
 
 
@@ -245,11 +252,11 @@ class ParserVideo():
 
 
 
+
     @property
     def data(self) -> dict|None:
 
         return self.attr or None
-    
 
 
 
@@ -271,6 +278,7 @@ class ParserDocument():
             self.attr["file_id"] = document.file_id
 
             self.attr["unique_file_id"] = document.file_unique_id
+
 
 
 
@@ -304,11 +312,11 @@ class ParserAnimation():
 
 
 
+
     @property
     def data(self) -> dict|None:
 
         return self.attr or None
-    
 
 
 
@@ -339,11 +347,12 @@ class ParserAudio():
 
 
 
+
     @property
     def data(self) -> dict|None:
 
         return self.attr or None
-    
+
 
 
 
@@ -369,12 +378,11 @@ class ParserVoice():
 
 
 
+
     @property
     def data(self) -> dict|None:
 
         return self.attr or None
-
-
 
 
 
@@ -407,11 +415,11 @@ class ParserSticker():
 
 
 
+
     @property
     def data(self) -> dict|None:
 
         return self.attr or None
-
 
 
 
@@ -439,6 +447,7 @@ class ParserPoll():
             self.attr["is_anonymous"] = poll.is_anonymous
 
             self.attr["allows_multiple_answers"] = poll.allows_multiple_answers
+
 
 
 
