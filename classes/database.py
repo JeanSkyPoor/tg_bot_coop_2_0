@@ -2,7 +2,9 @@ import json
 import psycopg2
 from configparser import ConfigParser
 from aiogram.types import Message
+import psycopg2.pool
 from classes.custom_message import CustomMessage
+from contextlib import contextmanager
 
 
 class Database():
@@ -10,8 +12,11 @@ class Database():
     def __init__(self) -> None:
         
         self.read_creds()
-        self.connect = psycopg2.connect(**self.creds)
-        self.connect.autocommit = True
+        self.connection_pool = psycopg2.pool.SimpleConnectionPool(
+            1,
+            10,
+            **self.creds
+        )
 
 
 
@@ -33,12 +38,26 @@ class Database():
 
 
 
+    @contextmanager
+    def get_cursor(self):
+
+        con = self.connection_pool.getconn()
+        con.autocommit = True
+
+        try:
+            yield con.cursor()
+        finally:
+            self.connection_pool.putconn(con)
+
+
+
+
     def insert_message(
             self,
             message: Message
     ):
 
-        with self.connect.cursor() as cur:
+        with self.get_cursor() as cursor:
             
             message = CustomMessage(message).data
 
@@ -46,7 +65,8 @@ class Database():
                 message,
                 ensure_ascii = False
             )
+
             try:
-                cur.execute("SELECT insert_message(%s)", (message,))
+                cursor.execute("SELECT insert_message(%s)", (message,))
             except Exception as e:
                 return e
