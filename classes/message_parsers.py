@@ -182,7 +182,9 @@ class ParserWords():
         
         self.attr = {}
 
-        text = re.sub("""[\[\]!#$%^*–(){}+<>'~`,.?"№_\-—:\\\|/:;]""", "", text).lower()
+        if text:
+
+            text = re.sub("""[\[\]!#$%^*–(){}+<>'~`,.?"№_\-—:\\\|/:;]""", "", text).lower()
 
         if text:
 
