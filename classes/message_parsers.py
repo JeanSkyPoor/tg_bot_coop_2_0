@@ -182,9 +182,9 @@ class ParserWords():
         
         self.attr = {}
 
-        if text:
+        text = re.sub("""[\[\]!#$%^*–(){}+<>'~`,.?"№_\-—:\\\|/:;]""", "", text).lower()
 
-            text = re.sub("""[\[\]!#$%^*–(){}+<>'~`,.?"№_\-—:\\\|/:;]""", "", text).lower()
+        if text:
 
             self.attr["words"] = text.split()
 
