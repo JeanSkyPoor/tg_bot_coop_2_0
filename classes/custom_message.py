@@ -1,5 +1,5 @@
 from aiogram.types import Message
-from message_parsers import *
+from classes.message_parsers import *
 
 
 

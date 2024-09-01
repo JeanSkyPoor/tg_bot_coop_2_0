@@ -81,7 +81,7 @@ CREATE TABLE messages_info(
 DROP TABLE IF EXISTS messages_forward_from_chat CASCADE;
 CREATE TABLE messages_forward_from_chat(
 	message_id INTEGER
-,	chat_id INTEGER NOT NULL
+,	chat_id BIGINT NOT NULL
 ,	type TEXT NOT NULL
 ,	title TEXT DEFAULT NULL
 ,	username TEXT DEFAULT NULL
@@ -135,7 +135,7 @@ CREATE TABLE messages_words(
 DROP TABLE IF EXISTS messages_links CASCADE;
 CREATE TABLE messages_links(
 	message_id INTEGER
-,	link TEXT[] NOT NULL
+,	link TEXT NOT NULL
 ,	CONSTRAINT fk_message_id FOREIGN KEY(message_id) REFERENCES messages(message_id)
 );
 

@@ -9,7 +9,7 @@ class ParserMessageInfo():
 
     def __init__(self, message: Message) -> None:
 
-        self.message_id_tg = str(message.message_id)
+        self.message_id_tg = message.message_id
 
         self.date = str(message.date.replace(tzinfo = None) + timedelta(hours = 3))
 
@@ -17,7 +17,7 @@ class ParserMessageInfo():
 
         self.content_type = message.content_type.split(".")[0].upper()
 
-        self.user_id_tg = str(message.from_user.id)
+        self.user_id_tg = message.from_user.id
 
 
 
@@ -66,7 +66,7 @@ class ParserForwardFromChat():
             
             forward_from_chat = message.forward_from_chat
 
-            self.attr["chat_id"] = str(forward_from_chat.id)
+            self.attr["chat_id"] = forward_from_chat.id
 
             self.attr["type"] = forward_from_chat.type
 
@@ -101,7 +101,7 @@ class ParserForwardFromUser():
 
             forward_from = message.forward_from
 
-            self.attr["user_id"] = str(forward_from.id)
+            self.attr["user_id"] = forward_from.id
 
             self.attr["is_bot"] = forward_from.is_bot
 
@@ -164,7 +164,7 @@ class ParserLinks():
     @property
     def data(self) -> list|None:
 
-        return self.links
+        return self.links or None
 
 
 
@@ -184,7 +184,7 @@ class ParserWords():
 
             self.attr["words"] = text.split()
 
-            self.attr["word_count"] = str(len(self.attr["words"]))
+            self.attr["word_count"] = len(self.attr["words"])
 
 
     @property
@@ -241,7 +241,7 @@ class ParserVideo():
 
             self.attr["unique_file_id"] = video.file_unique_id
 
-            self.attr["duration"] = str(video.duration)
+            self.attr["duration"] = video.duration
 
 
 
@@ -300,7 +300,7 @@ class ParserAnimation():
 
             self.attr["unique_file_id"] = animation.file_unique_id
 
-            self.attr["duration"] = str(animation.duration)
+            self.attr["duration"] = animation.duration
 
 
 
@@ -331,7 +331,7 @@ class ParserAudio():
 
             self.attr["unique_file_id"] = audio.file_unique_id
 
-            self.attr["duration"] = str(audio.duration)
+            self.attr["duration"] = audio.duration
 
             self.attr["performer"] = audio.performer
 
@@ -365,7 +365,7 @@ class ParserVoice():
 
             self.attr["unique_file_id"] = voice.file_unique_id
 
-            self.attr["duration"] = str(voice.duration)
+            self.attr["duration"] = voice.duration
 
 
 
@@ -434,7 +434,7 @@ class ParserPoll():
 
             self.attr["question"] = poll.question
 
-            self.attr["options"] = poll.options
+            self.attr["options"] = [i.text for i in poll.options]
 
             self.attr["is_anonymous"] = poll.is_anonymous
 
