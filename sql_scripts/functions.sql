@@ -362,4 +362,5 @@ AS $$
 			PERFORM insert_into_messages_polls(_message_id, _poll);
 		END IF;
 	END;
+	
 $$ LANGUAGE plpgsql;

@@ -34,4 +34,7 @@ async def insert_message(message: Message):
     if message.chat.id != CHAT_ID:
         return
     
-    database.insert_message(message)
+    result = database.insert_message(message)
+    
+    if result:
+        await message.reply(text = f"Упс. Ошибка: \n {result}")

@@ -124,7 +124,7 @@ DROP TABLE IF EXISTS messages_words CASCADE;
 CREATE TABLE messages_words(
 	message_id INTEGER
 ,	word_count SMALLINT NOT NULL
-,	words TEXT[] NOT NULL
+,	words TEXT[]
 ,	CONSTRAINT fk_message_id FOREIGN KEY(message_id) REFERENCES messages(message_id)
 );
 

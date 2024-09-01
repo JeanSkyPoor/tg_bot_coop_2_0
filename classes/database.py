@@ -20,6 +20,7 @@ class Database():
 
         parser = ConfigParser()
 
+        #Поменять на полный путь на малинке
         parser.read("config/database.ini")
 
         self.creds = {}
@@ -35,7 +36,7 @@ class Database():
     def insert_message(
             self,
             message: Message
-    ) -> None:
+    ):
 
         with self.connect.cursor() as cur:
             
@@ -45,5 +46,7 @@ class Database():
                 message,
                 ensure_ascii = False
             )
-            
-            cur.execute("SELECT insert_message(%s)", (message,))
+            try:
+                cur.execute("SELECT insert_message(%s)", (message,))
+            except Exception as e:
+                return e
