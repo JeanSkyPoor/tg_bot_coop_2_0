@@ -184,7 +184,7 @@ class ParserWords():
 
         if text:
 
-            text = re.sub("""[\[\]!#$%^*–(){}+<>'~`,.?"№_\-—:\\\|/:;]""", "", text).lower()
+            text = re.sub("""[\[\]!#$%^*=–(){}+<>'~`,.?"№_\-—:\\\|/:;]""", "", text).lower().strip()
 
         if text:
 
