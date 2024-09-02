@@ -33,8 +33,15 @@ async def insert_message(message: Message):
 
     if message.chat.id != CHAT_ID:
         return
-    
+
     result = database.insert_message(message)
-    
+
     if result:
-        await message.reply(text = f"Упс. Ошибка: \n {result}")
+
+        message_id = message.message_id
+
+        await bot.send_message(
+            chat_id = CHAT_ID,
+            reply_to_message_id = message_id,
+            text = "@Jean_Sky_Poor, Не удалось сохранить это сообщение. Чекай логи"
+        )

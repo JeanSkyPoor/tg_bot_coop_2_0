@@ -55,18 +55,18 @@ class Database():
     def insert_message(
             self,
             message: Message
-    ):
+    ) -> None|Exception:
 
         with self.get_cursor() as cursor:
             
-            message = CustomMessage(message).data
+            data = CustomMessage(message).data
 
-            message = json.dumps(
-                message,
+            data = json.dumps(
+                data,
                 ensure_ascii = False
             )
 
             try:
-                cursor.execute("SELECT insert_message(%s)", (message,))
+                cursor.execute("SELECT insert_message(%s)", (data,))
             except Exception as e:
                 return e
