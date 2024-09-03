@@ -457,3 +457,41 @@ class ParserPoll():
     def data(self) -> dict|None:
 
         return self.attr or None
+
+
+
+
+class SetUserParser():
+
+    def __init__(
+            self,
+            message: Message
+    ) -> None:
+        
+        self.attr = {}
+
+
+        try:
+            self.attr["birthday"] = message.text.split()[1]
+        except IndexError:
+            self.attr["birthday"] = None
+        
+        from_user = message.reply_to_message.from_user
+
+        self.attr["user_id_tg"] = from_user.id
+
+        self.attr["username"] = from_user.username
+
+        self.attr["first_name"] = from_user.first_name
+
+        self.attr["last_name"] = from_user.last_name
+
+        self.attr["full_name"] = from_user.full_name
+
+
+
+
+    @property
+    def data(self) -> dict:
+
+        return self.attr

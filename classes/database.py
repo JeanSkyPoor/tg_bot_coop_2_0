@@ -4,6 +4,7 @@ from configparser import ConfigParser
 from aiogram.types import Message
 import psycopg2.pool
 from classes.custom_message import CustomMessage
+from classes.message_parsers import SetUserParser
 from contextlib import contextmanager
 
 
@@ -55,7 +56,7 @@ class Database():
     def insert_message(
             self,
             message: Message
-    ) -> None|Exception:
+    ) -> None|int:
 
         with self.get_cursor() as cursor:
             
@@ -68,5 +69,27 @@ class Database():
 
             try:
                 cursor.execute("SELECT insert_message(%s)", (data,))
-            except Exception as e:
-                return e
+            except:
+                return 1
+
+
+
+
+    def set_user(
+            self,
+            message: Message
+    ) -> None|int:
+
+        with self.get_cursor() as cursor:
+
+            user = SetUserParser(message).data
+
+            data = json.dumps(
+                user,
+                ensure_ascii = False
+            )
+
+            try:
+                cursor.execute("SELECT set_user(%s)", (data,))
+            except:
+                return 1

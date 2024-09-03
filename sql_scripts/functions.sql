@@ -364,3 +364,58 @@ AS $$
 	END;
 	
 $$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION set_user(
+	data JSON
+) RETURNS void
+AS $$
+	
+	DECLARE 
+		_user_id_tg INTEGER;
+		_username TEXT;
+		_first_name TEXT;
+		_last_name TEXT;
+		_full_name TEXT;
+		_birthday DATE;
+	BEGIN
+		SELECT (data->>'user_id_tg')::INTEGER INTO _user_id_tg;
+		SELECT (data->>'username') INTO _username;
+		SELECT (data->>'first_name') INTO _first_name;
+		SELECT (data->>'last_name') INTO _last_name;
+		SELECT (data->>'full_name') INTO _full_name;
+		SELECT (data->>'birthday')::DATE INTO _birthday;
+
+		IF _birthday IS NULL THEN
+			INSERT INTO users(user_id_tg, username, first_name, last_name, full_name)
+			VALUES (
+				_user_id_tg
+			,	_username
+			,	_first_name
+			,   _last_name
+			,	_full_name
+			) ON CONFLICT(user_id_tg) DO UPDATE SET
+					username = _username
+				,	first_name = _first_name
+				,	last_name = _last_name
+				,	full_name = _full_name;
+		ELSE
+			INSERT INTO users(user_id_tg, username, first_name, last_name, full_name, birthday)
+			VALUES (
+				_user_id_tg
+			,	_username
+			,	_first_name
+			,   _last_name
+			,	_full_name
+			,	_birthday
+			) ON CONFLICT(user_id_tg) DO UPDATE SET
+					username = _username
+				,	first_name = _first_name
+				,	last_name = _last_name
+				,	full_name = _full_name
+				,	birthday = _birthday;
+		END IF;
+	END;
+$$ LANGUAGE plpgsql;
