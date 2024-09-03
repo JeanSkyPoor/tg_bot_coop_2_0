@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.types import Message
 from aiogram import Bot
 from classes.database import Database
-from config.bot_config import TOKEN, CHAT_ID
+from config.bot_config import TOKEN, CHAT_ID, ADMIN_ID
 from aiogram.filters import Command
 
 database = Database()
@@ -13,7 +13,10 @@ bot =  Bot(token = TOKEN)
 
 
 
-@router.message(Command(commands="set_user"))
+@router.message(
+        Command(commands="set_user"),
+        F.from_user.id == ADMIN_ID
+)
 async def set_user(message: Message):
 
     if message.chat.id != CHAT_ID:
