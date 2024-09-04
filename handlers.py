@@ -4,6 +4,9 @@ from aiogram import Bot
 from classes.database import Database
 from config.bot_config import TOKEN, CHAT_ID, ADMIN_ID
 from aiogram.filters import Command
+import json
+from classes.custom_message import CustomMessage
+from classes.message_parsers import SetUserParser
 
 database = Database()
 
@@ -14,15 +17,30 @@ bot =  Bot(token = TOKEN)
 
 
 @router.message(
-        Command(commands="set_user"),
-        F.from_user.id == ADMIN_ID
+        Command(commands="set_user")
 )
 async def set_user(message: Message):
 
     if message.chat.id != CHAT_ID:
         return
+    
+    if message.from_user.id != ADMIN_ID:
 
-    result = database.set_user(message)
+        await bot.send_message(
+            chat_id = CHAT_ID,
+            text = "Не для тебя моя роза цвела!"
+        )
+
+        return
+    
+    data = SetUserParser(message).data
+
+    data = json.dumps(
+        data,
+        ensure_ascii = False
+    )
+
+    result = database.set_user(data)
 
     if result:
         
@@ -31,7 +49,7 @@ async def set_user(message: Message):
         await bot.send_message(
             chat_id = CHAT_ID,
             reply_to_message_id = message_id,
-            text = "@Jean_Sky_Poor, Не удалось обновить юзверя. Чекай логи"
+            text = "Не удалось обновить юзверя. Чекай логи"
         )
 
 
@@ -56,8 +74,15 @@ async def insert_message(message: Message):
 
     if message.chat.id != CHAT_ID:
         return
+    
+    data = CustomMessage(message).data
 
-    result = database.insert_message(message)
+    data = json.dumps(
+        data,
+        ensure_ascii = False
+    )
+
+    result = database.insert_message(data)
 
     if result:
 

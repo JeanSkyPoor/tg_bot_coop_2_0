@@ -55,18 +55,11 @@ class Database():
 
     def insert_message(
             self,
-            message: Message
+            data: str
     ) -> None|int:
 
         with self.get_cursor() as cursor:
             
-            data = CustomMessage(message).data
-
-            data = json.dumps(
-                data,
-                ensure_ascii = False
-            )
-
             try:
                 cursor.execute("SELECT insert_message(%s)", (data,))
             except:
@@ -77,17 +70,10 @@ class Database():
 
     def set_user(
             self,
-            message: Message
+            data: str
     ) -> None|int:
 
         with self.get_cursor() as cursor:
-
-            user = SetUserParser(message).data
-
-            data = json.dumps(
-                user,
-                ensure_ascii = False
-            )
 
             try:
                 cursor.execute("SELECT set_user(%s)", (data,))
