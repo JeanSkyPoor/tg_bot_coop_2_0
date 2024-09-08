@@ -5,7 +5,7 @@ from classes.modules import Modules
 from config.bot_config import TOKEN, CHAT_ID, ADMIN_ID
 from aiogram.filters import Command
 from classes.message_parsers import MessageParser
-import pprint
+
 
 router = Router()
 
@@ -15,6 +15,42 @@ bot =  Bot(token = TOKEN)
 
 
 modules = Modules()
+
+
+
+@router.message(
+        Command("birthday")
+)
+async def set_birthday(message: Message):
+
+    if message.chat.id != CHAT_ID:
+            return
+    
+    if message.from_user.id != ADMIN_ID:
+         
+        await bot.send_message(
+            CHAT_ID,
+            "Не для тебя моя роза цвела!!!!"
+        )
+    
+    data = MessageParser(message).json_to_set_birthday
+    
+    print(data)
+
+    result = modules.database.set_birthday(data)
+
+    if result == "error":
+
+        await bot.send_message(
+             CHAT_ID,
+             "не удалось обновить др!"
+        )
+    else:
+        
+        await bot.send_message(
+             CHAT_ID,
+             "Успех!"
+        )
 
 
 

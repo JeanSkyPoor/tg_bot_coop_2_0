@@ -469,3 +469,17 @@ CREATE OR REPLACE FUNCTION insert_message(
 		END IF;
 	END;
 $$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION set_birthday(
+	data JSON
+) RETURNS void AS $$
+	
+	UPDATE users
+	SET
+		birthday = (data->'text'->>'text')::DATE
+	WHERE
+		user_id_tg = (data->'reply_to_message'->'user'->>'id')::INTEGER;
+$$ LANGUAGE SQL;

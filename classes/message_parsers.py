@@ -71,3 +71,21 @@ class MessageParser():
         }
 
         return json.dumps(attr_dict, ensure_ascii = False)
+    
+
+
+    @property
+    def json_to_set_birthday(self):
+
+        keys = [
+            "reply_to_message",
+            "text"
+        ]
+
+        attr_dict = {
+            key: value for key, value in self.__dict__.items() if key in keys
+        }
+
+        attr_dict["text"]["text"] = attr_dict["text"]["text"].split()[1]
+
+        return json.dumps(attr_dict, ensure_ascii = False)

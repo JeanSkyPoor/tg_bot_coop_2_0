@@ -62,3 +62,18 @@ class Database():
                 cursor.execute("SELECT insert_message(%s)", (data,))
             except:
                 return 'error'
+
+
+
+
+    def set_birthday(
+            self,
+            data: str
+    ) -> None|str:
+        
+        with self.get_cursor() as cursor:
+            
+            try:
+                cursor.execute("SELECT set_birthday(%s)", (data,))
+            except:
+                return 'error'
