@@ -239,7 +239,9 @@ CREATE OR REPLACE FUNCTION insert_into_users(
 			,	username = _username
 			,	first_name = _first_name
 			,	last_name = _last_name
-			,	full_name = _full_name;
+			,	full_name = _full_name
+			WHERE
+				user_id_tg = _user_id_tg;
 		END IF;
 	END;
 $$ LANGUAGE plpgsql;
@@ -305,7 +307,7 @@ CREATE OR REPLACE FUNCTION insert_into_reply_to_message(
 	INSERT INTO reply_to_message
 	VALUES(
 		message_id
-	,	(reply_to_message_part->>'id')::INTEGER
+	,	(reply_to_message_part->'message'->>'id')::INTEGER
 	);
 $$ LANGUAGE SQL;
 

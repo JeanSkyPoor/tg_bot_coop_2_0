@@ -263,6 +263,8 @@ class CustomChat(Base):
 
 class CustomMessage(Base):
 
+    "https://docs.aiogram.dev/en/dev-3.x/api/types/message.html#aiogram.types.message.Message"
+
     def __init__(
             self,
             message: Message
@@ -337,3 +339,35 @@ class CustomText(Base):
                 self.words = replaced_text.split()
 
                 self.words_count: int = len(self.words)
+
+
+
+
+class CustomReplyToMessage(Base):
+
+    def __init__(
+            self,
+            message: Message
+    ) -> None:
+        
+        self.message = CustomMessage(message).data
+
+        self.user = CustomUser(message.from_user).data
+
+        self.text = CustomText(message).data
+
+        self.photo = CustomPhoto(message.photo).data
+
+        self.video = CustomVideo(message.video).data
+
+        self.document = CustomDocument(message.document).data
+
+        self.animation = CustomAnimation(message.animation).data
+
+        self.audio = CustomAudio(message.audio).data
+
+        self.voice = CustomVoice(message.voice).data
+
+        self.sticker = CustomSticker(message.sticker).data
+
+        self.poll = CustomPoll(message.poll).data

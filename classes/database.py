@@ -54,7 +54,7 @@ class Database():
     def insert_message(
             self,
             data: str
-    ) -> None|int:
+    ) -> None|str:
 
         with self.get_cursor() as cursor:
             

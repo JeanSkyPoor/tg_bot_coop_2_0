@@ -20,7 +20,10 @@ class MessageParser():
 
         self.forward_from_user = CustomUser(message.forward_from).data
 
-        self.reply_to_message = CustomMessage(message.reply_to_message).data
+        self.reply_to_message = None
+        if message.reply_to_message:
+
+            self.reply_to_message = CustomReplyToMessage(message.reply_to_message).data
 
         self.text = CustomText(message).data
 
