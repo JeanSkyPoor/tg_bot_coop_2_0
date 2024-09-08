@@ -1,106 +1,72 @@
-CREATE OR REPLACE FUNCTION insert_into_messages(
-	data JSON
-) RETURNS INTEGER
-AS $$
-	DECLARE _message_id INTEGER;
+CREATE OR REPLACE FUNCTION insert_into_message_sticker(
+	message_id INTEGER
+,	sticker_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_sticker
+	VALUES(
+		message_id
+	,	(sticker_part->>'file_id')
+	,	(sticker_part->>'file_unique_id')
+	,	(sticker_part->>'type')
+	,	(sticker_part->>'is_animated')::BOOL
+	,	(sticker_part->>'is_video')::BOOL
+	,	(sticker_part->>'emoji')
+	,	(sticker_part->>'set_name')
+	);
+$$ LANGUAGE SQL;
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_into_message_poll(
+	message_id INTEGER
+,	poll_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_poll
+	VALUES(
+		message_id
+	,	(poll_part->>'id')
+	,	(poll_part->>'question')
+	,	(SELECT array_agg(ary)::TEXT[] FROM json_array_elements_text(poll_part->'options') AS ary)
+	,	(poll_part->>'is_anonymous')::BOOL
+	,	(poll_part->>'allows_multiple_answers')::BOOL
+	,	(poll_part->>'type')
+	);
+$$ LANGUAGE SQL;
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_into_message_photo(
+	message_id INTEGER
+,	photo_part JSON
+) RETURNS void AS $$
 	
-	BEGIN
-		INSERT INTO messages(message_id_tg)
-		VALUES((data->>'message_id_tg')::INTEGER) RETURNING message_id INTO _message_id;
-		
-		RETURN _message_id;
-	END;
-$$ LANGUAGE plpgsql;
-
-
-
-
-CREATE OR REPLACE FUNCTION insert_into_messages_info(
-	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_info
+	INSERT INTO message_photo
 	VALUES(
 		message_id
-	,	(data->>'date')::TIMESTAMP
-	,	(SELECT type_id FROM message_type AS mt WHERE mt.type = data->>'type')
-	,	(SELECT content_type_id FROM message_content_type AS mct WHERE mct.content_type = data->>'content_type')
-	,	(data->>'user_id_tg')::INTEGER
+	,	(photo_part->>'file_id')
+	,	(photo_part->>'file_unique_id')
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_forward_from_chat(
+CREATE OR REPLACE FUNCTION insert_into_message_link(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_forward_from_chat
-	VALUES(
-		message_id
-	,	(data->>'chat_id')::BIGINT
-	,	(data->>'type')
-	,	(data->>'title')
-	,	(data->>'username')
-	,	(data->>'first_name')
-	,	(data->>'last_name')
-	);
-$$ LANGUAGE SQL;
-
-
-
-
-CREATE OR REPLACE FUNCTION insert_into_messages_forward_from_user(
-	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_forward_from_user
-	VALUES(
-		message_id
-	,	(data->>'user_id')::INTEGER
-	,	(data->>'is_bot')::BOOL
-	,	(data->>'username')
-	,	(data->>'first_name')
-	,	(data->>'last_name')
-	,	(data->>'full_name')
-	);
-$$ LANGUAGE SQL;
-
-
-
-
-CREATE OR REPLACE FUNCTION insert_into_messages_text(
-	message_id INTEGER
-,	data TEXT
-) RETURNS void
-AS $$
-	INSERT INTO messages_text
-	VALUES(
-		message_id
-	,	data
-	);
-$$ LANGUAGE SQL;
-
-
-
-
-CREATE OR REPLACE FUNCTION insert_into_messages_links(
-	message_id INTEGER
-,	links JSON
-) RETURNS void
-AS $$
+,	text_part JSON
+) RETURNS void AS $$
 	DECLARE 
 		_link TEXT;
 		_links TEXT[];
 	BEGIN
-		SELECT array_agg(ary)::TEXT[] FROM json_array_elements_text(links) AS ary INTO _links;
+		SELECT array_agg(ary)::TEXT[] FROM json_array_elements_text(text_part->'links') AS ary INTO _links;
 
 		FOREACH _link IN ARRAY _links LOOP
-			INSERT INTO messages_links
+			INSERT INTO message_link
 			VALUES(
 				message_id
 			,	_link::TEXT
@@ -112,157 +78,294 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_words(
+CREATE OR REPLACE FUNCTION insert_into_message_document(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_words
+,	document_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_document
 	VALUES(
 		message_id
-	,	(data->>'word_count')::SMALLINT
-	,	(SELECT array_agg(ary)::TEXT[] FROM json_array_elements_text(data->'words') AS ary)
+	,	(document_part->>'file_id')
+	,	(document_part->>'file_unique_id')
+	,	(document_part->>'file_name')
+	,	(document_part->>'mime_type')
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_photos(
+CREATE OR REPLACE FUNCTION insert_into_message_animation(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_photos
+,	animation_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_animation
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
+	,	(animation_part->>'file_id')
+	,	(animation_part->>'file_unique_id')
+	,	(animation_part->>'duration')::SMALLINT
+	,	(animation_part->>'file_name')
+	,	(animation_part->>'mime_type')
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_videos(
+CREATE OR REPLACE FUNCTION insert_into_message_audio(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_videos
+,	audio_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_audio
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
-	,	(data->>'duration')::SMALLINT
+	,	(audio_part->>'file_id')
+	,	(audio_part->>'file_unique_id')
+	,	(audio_part->>'duration')::SMALLINT
+	,	(audio_part->>'performer')
+	,	(audio_part->>'title')
+	,	(audio_part->>'file_name')
+	,	(audio_part->>'mime_type')
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_documents(
+CREATE OR REPLACE FUNCTION insert_into_message_video(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_documents
+,	video_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_video
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
+	,	(video_part->>'file_id')
+	,	(video_part->>'file_unique_id')
+	,	(video_part->>'duration')::SMALLINT
+	,	(video_part->>'file_name')
+	,	(video_part->>'mime_type')
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_animations(
+CREATE OR REPLACE FUNCTION insert_into_message_voice(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_animations
+,	voice_part JSON
+) RETURNS void AS $$
+	
+	INSERT INTO message_voice
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
-	,	(data->>'duration')::SMALLINT
+	,	(voice_part->>'file_id')
+	,	(voice_part->>'file_unique_id')
+	,	(voice_part->>'duration')::SMALLINT
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_audios(
+CREATE OR REPLACE FUNCTION insert_into_message_text(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_audios
+,	text_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_text
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
-	,	(data->>'duration')::SMALLINT
-	,	(data->>'performer')
-	,	(data->>'title')
+	,	(text_part->>'text')
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_voices(
+CREATE OR REPLACE FUNCTION insert_into_message_word(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_voices
+,	text_part JSON
+) RETURNS void AS $$
+
+	INSERT INTO message_word
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
-	,	(data->>'duration')::SMALLINT
+	,	(SELECT array_agg(ary)::TEXT[] FROM json_array_elements_text(text_part->'words') AS ary)
+	,	(text_part->>'words_count')::SMALLINT
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_stickers(
+CREATE OR REPLACE FUNCTION insert_into_users(
+	user_part JSON
+) RETURNS void AS $$
+	DECLARE
+		_user_id_tg INTEGER;
+		_is_bot BOOL;
+		_username TEXT;
+		_first_name TEXT;
+		_last_name TEXT;
+		_full_name TEXT;
+	BEGIN
+		SELECT (user_part->>'id'):: INTEGER INTO _user_id_tg;
+		SELECT (user_part->>'is_bot')::BOOL INTO _is_bot;
+		SELECT (user_part->>'username') INTO _username;
+		SELECT (user_part->>'first_name') INTO _first_name;
+		SELECT (user_part->>'last_name') INTO _last_name;
+		SELECT (user_part->>'full_name') INTO _full_name;
+		
+		IF (SELECT user_id_tg FROM users WHERE user_id_tg = _user_id_tg) IS NULL
+		THEN
+			INSERT INTO users
+			VALUES(
+				_user_id_tg
+			,	_is_bot
+			,	_username
+			,	_first_name
+			,	_last_name
+			,	_full_name
+			);
+		ELSE
+			UPDATE users
+			SET
+				is_bot = _is_bot
+			,	username = _username
+			,	first_name = _first_name
+			,	last_name = _last_name
+			,	full_name = _full_name;
+		END IF;
+	END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_into_chats(
+	chat_part JSON
+) RETURNS void AS $$
+	DECLARE
+		_chat_id BIGINT;
+		_type TEXT;
+		_title TEXT;
+		_username TEXT;
+		_first_name TEXT;
+		_last_name TEXT;
+		_full_name TEXT;
+		
+	BEGIN
+		SELECT (chat_part->>'id')::BIGINT INTO _chat_id;
+		SELECT (chat_part->>'type') INTO _type;
+		SELECT (chat_part->>'title') INTO _title;
+		SELECT (chat_part->>'username') INTO _username;
+		SELECT (chat_part->>'first_name') INTO _first_name;
+		SELECT (chat_part->>'last_name') INTO _last_name;
+		SELECT (chat_part->>'full_name') INTO _full_name;
+		
+		IF (SELECT chat_id FROM chats WHERE chat_id = _chat_id) IS NULL 
+		THEN
+			INSERT INTO chats
+			VALUES(
+				_chat_id
+			,	_type
+			,	_title
+			,	_username
+			,	_first_name
+			,	_last_name
+			,	_full_name
+			);
+		ELSE
+			UPDATE chats
+			SET
+				type = _type
+			,	title = _title
+			,	username = _username
+			,	first_name = _username
+			,	last_name = _last_name
+			,	full_name = _full_name
+			WHERE
+				chat_id = _chat_id;
+		END IF;
+	END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_into_reply_to_message(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_stickers
+,	reply_to_message_part JSON
+) RETURNS void AS $$
+	INSERT INTO reply_to_message
 	VALUES(
 		message_id
-	,	(data->>'file_id')
-	,	(data->>'unique_file_id')
-	,	(data->>'type')
-	,	(data->>'is_animated')::BOOL
-	,	(data->>'is_video')::BOOL
-	,	(data->>'set_name')
+	,	(reply_to_message_part->>'id')::INTEGER
 	);
 $$ LANGUAGE SQL;
 
 
 
 
-CREATE OR REPLACE FUNCTION insert_into_messages_polls(
+CREATE OR REPLACE FUNCTION insert_into_messages(
+	message_part JSON
+,	user_part JSON
+) RETURNS INTEGER AS $$
+	DECLARE
+		_message_id INTEGER;
+	BEGIN
+		PERFORM insert_into_users(user_part);
+		
+		INSERT INTO messages(message_id_tg, user_id_tg, date, type_id, content_type_id)
+		VALUES(
+			(message_part->>'id')::INTEGER
+		,	(user_part->>'id')::INTEGER
+		,	(message_part->>'date')::TIMESTAMP
+		,	(SELECT type_id FROM message_types AS mt WHERE mt.type = (message_part->>'type'))
+		,	(SELECT content_type_id FROM message_content_types WHERE content_type = (message_part->>'content_type'))
+		) RETURNING message_id INTO _message_id;
+		
+	RETURN _message_id;
+	
+	END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_into_forward_from_chat(
 	message_id INTEGER
-,	data JSON
-) RETURNS void
-AS $$
-	INSERT INTO messages_polls
+,	forward_from_chat_part JSON
+) RETURNS void AS $$
+	
+	SELECT insert_into_chats(forward_from_chat_part);
+	
+	INSERT INTO forward_from_chat
 	VALUES(
 		message_id
-	,	(data->>'poll_id')
-	,	(data->>'question')
-	,	(SELECT array_agg(ary)::TEXT[] FROM json_array_elements_text(data->'options') AS ary)
-	,	(data->>'is_anonymous')::BOOL
-	,	(data->>'allows_multiple_answers')::BOOL
+	,	(forward_from_chat_part->>'id')::BIGINT
+	);
+$$ LANGUAGE SQL;
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_into_forward_from_user(
+	message_id INTEGER
+,	user_part JSON
+) RETURNS void AS $$
+
+	SELECT insert_into_users(user_part);
+	
+	INSERT INTO forward_from_user
+	VALUES(
+		message_id
+	,	(user_part->>'id')::INTEGER
 	);
 $$ LANGUAGE SQL;
 
@@ -271,151 +374,96 @@ $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION insert_message(
 	data JSON
-) RETURNS void
-AS $$
+) RETURNS void AS $$
 	DECLARE
 		_message_id INTEGER;
-		_message_info JSON;
-		_forward_from_chat JSON;
-		_forward_from_user JSON;
-		_text TEXT;
-		_links JSON;
-		_words JSON;
-		_photo JSON;
-		_video JSON;
-		_document JSON;
-		_animation JSON;
-		_audio JSON;
-		_voice JSON;
-		_sticker JSON;
-		_poll JSON;
+		_message_part JSON;
+		_user_part JSON;
+		_forward_from_chat_part JSON;
+		_forward_from_user_part JSON;
+		_reply_to_message_part JSON;
+		_text_part JSON;
+		_photo_part JSON;
+		_video_part JSON;
+		_document_part JSON;
+		_animation_part JSON;
+		_audio_part JSON;
+		_voice_part JSON;
+		_sticker_part JSON;
+		_poll_part JSON;
 		
 	BEGIN
-		SELECT data->'message_info' INTO _message_info;
-		SELECT data->'forward_from_chat' INTO _forward_from_chat;
-		SELECT data->'forward_from_user' INTO _forward_from_user;
-		SELECT data->>'text' INTO _text;
-		SELECT data->'links' INTO _links;
-		SELECT data->'words' INTO _words;
-		SELECT data->'photo' INTO _photo;
-		SELECT data->'video' INTO _video;
-		SELECT data->'document' INTO _document;
-		SELECT data->'animation' INTO _animation;
-		SELECT data->'audio' INTO _audio;
-		SELECT data->'voice' INTO _voice;
-		SELECT data->'sticker' INTO _sticker;
-		SELECT data->'poll' INTO _poll;
+		SELECT (data->'message') INTO _message_part;
+		SELECT (data->'user') INTO _user_part;
+		SELECT (data->'forward_from_chat') INTO _forward_from_chat_part;
+		SELECT (data->'forward_from_user') INTO _forward_from_user_part;
+		SELECT (data->'reply_to_message') INTO _reply_to_message_part;
+		SELECT (data->'text') INTO _text_part;
+		SELECT (data->'photo') INTO _photo_part;
+		SELECT (data->'video') INTO _video_part;
+		SELECT (data->'document') INTO _document_part;
+		SELECT (data->'animation') INTO _animation_part;
+		SELECT (data->'audio') INTO _audio_part;
+		SELECT (data->'voice') INTO _voice_part;
+		SELECT (data->'sticker') INTO _sticker_part;
+		SELECT (data->'poll') INTO _poll_part;
 		
-		_message_id:= insert_into_messages(_message_info);
+		_message_id := insert_into_messages(_message_part, _user_part);
 		
-		PERFORM insert_into_messages_info(_message_id, _message_info);
+		IF json_typeof(_forward_from_chat_part) != 'null' 
+			THEN PERFORM insert_into_forward_from_chat(_message_id, _forward_from_chat_part);
+		END IF;
+		
+		IF json_typeof(_forward_from_user_part) != 'null' 
+			THEN PERFORM insert_into_forward_from_user(_message_id, _forward_from_user_part);
+		END IF;
+		
+		IF json_typeof(_reply_to_message_part) != 'null' 
+			THEN PERFORM insert_into_reply_to_message(_message_id, _reply_to_message_part);
+		END IF;
+		
+		IF json_typeof(_text_part) != 'null' 
+			THEN PERFORM insert_into_message_text(_message_id, _text_part);
+		END IF;
+			
+		IF json_typeof(_text_part->'words_count') != 'null' 
+			THEN PERFORM insert_into_message_word(_message_id, _text_part);
+		END IF;
 
-		IF json_typeof(_forward_from_chat) != 'null' THEN
-			PERFORM insert_into_messages_forward_from_chat(_message_id, _forward_from_chat);
+		IF json_typeof(_text_part->'links') != 'null'
+			THEN PERFORM insert_into_message_link(_message_id, _text_part);
 		END IF;
 		
-		IF json_typeof(_forward_from_user) != 'null' THEN
-			PERFORM insert_into_messages_forward_from_user(_message_id, _forward_from_user);
+		IF json_typeof(_photo_part) != 'null' 
+			THEN PERFORM insert_into_message_photo(_message_id, _photo_part);
 		END IF;
 		
-		IF _text IS NOT NULL THEN
-			PERFORM insert_into_messages_text(_message_id, _text);
+		IF json_typeof(_video_part) != 'null' 
+			THEN PERFORM insert_into_message_video(_message_id, _video_part);
 		END IF;
 		
-		IF json_typeof(_links) != 'null' THEN
-			PERFORM insert_into_messages_links(_message_id, _links);
+		IF json_typeof(_document_part) != 'null' 
+			THEN PERFORM insert_into_message_document(_message_id, _document_part);
 		END IF;
 		
-		IF json_typeof(_words) != 'null' THEN
-			PERFORM insert_into_messages_words(_message_id, _words);
+		IF json_typeof(_animation_part) != 'null' 
+			THEN PERFORM insert_into_message_animation(_message_id, _animation_part);
 		END IF;
 		
-		IF json_typeof(_photo) != 'null' THEN
-			PERFORM insert_into_messages_photos(_message_id, _photo);
+		IF json_typeof(_audio_part) != 'null' 
+			THEN PERFORM insert_into_message_audio(_message_id, _audio_part);
 		END IF;
 		
-		IF json_typeof(_video) != 'null' THEN
-			PERFORM insert_into_messages_videos(_message_id, _video);
+		IF json_typeof(_voice_part) != 'null' 
+			THEN PERFORM insert_into_message_voice(_message_id, _voice_part);
 		END IF;
 		
-		IF json_typeof(_document) != 'null' THEN
-			PERFORM insert_into_messages_documents(_message_id, _document);
+		IF json_typeof(_sticker_part) != 'null' 
+			THEN PERFORM insert_into_message_sticker(_message_id, _sticker_part);
 		END IF;
 		
-		IF json_typeof(_animation) != 'null' THEN
-			PERFORM insert_into_messages_animations(_message_id, _animation);
-		END IF;
-		
-		IF json_typeof(_audio) != 'null' THEN
-			PERFORM insert_into_messages_audios(_message_id, _audio);
-		END IF;
-		
-		IF json_typeof(_voice) != 'null' THEN
-			PERFORM insert_into_messages_voices(_message_id, _voice);
-		END IF;
-		
-		IF json_typeof(_sticker) != 'null' THEN
-			PERFORM insert_into_messages_stickers(_message_id, _sticker);
-		END IF;
-		
-		IF json_typeof(_poll) != 'null' THEN
-			PERFORM insert_into_messages_polls(_message_id, _poll);
-		END IF;
-	END;
-	
-$$ LANGUAGE plpgsql;
-
-
-
-
-CREATE OR REPLACE FUNCTION set_user(
-	data JSON
-) RETURNS void
-AS $$
-	
-	DECLARE 
-		_user_id_tg INTEGER;
-		_username TEXT;
-		_first_name TEXT;
-		_last_name TEXT;
-		_full_name TEXT;
-		_birthday DATE;
-	BEGIN
-		SELECT (data->>'user_id_tg')::INTEGER INTO _user_id_tg;
-		SELECT (data->>'username') INTO _username;
-		SELECT (data->>'first_name') INTO _first_name;
-		SELECT (data->>'last_name') INTO _last_name;
-		SELECT (data->>'full_name') INTO _full_name;
-		SELECT (data->>'birthday')::DATE INTO _birthday;
-
-		IF _birthday IS NULL THEN
-			INSERT INTO users(user_id_tg, username, first_name, last_name, full_name)
-			VALUES (
-				_user_id_tg
-			,	_username
-			,	_first_name
-			,   _last_name
-			,	_full_name
-			) ON CONFLICT(user_id_tg) DO UPDATE SET
-					username = _username
-				,	first_name = _first_name
-				,	last_name = _last_name
-				,	full_name = _full_name;
-		ELSE
-			INSERT INTO users(user_id_tg, username, first_name, last_name, full_name, birthday)
-			VALUES (
-				_user_id_tg
-			,	_username
-			,	_first_name
-			,   _last_name
-			,	_full_name
-			,	_birthday
-			) ON CONFLICT(user_id_tg) DO UPDATE SET
-					username = _username
-				,	first_name = _first_name
-				,	last_name = _last_name
-				,	full_name = _full_name
-				,	birthday = _birthday;
+		IF json_typeof(_poll_part) != 'null' 
+			THEN PERFORM insert_into_message_poll(_message_id, _poll_part);
 		END IF;
 	END;
 $$ LANGUAGE plpgsql;
