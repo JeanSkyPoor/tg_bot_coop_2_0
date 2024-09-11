@@ -34,22 +34,21 @@ async def set_birthday(message: Message):
         )
     
     data = MessageParser(message).json_to_set_birthday
-    
-    print(data)
 
     result = modules.database.set_birthday(data)
 
     if result == "error":
 
         await bot.send_message(
-             CHAT_ID,
-             "не удалось обновить др!"
+            CHAT_ID,
+            "Не удалось обновить др!"
         )
+
     else:
         
         await bot.send_message(
-             CHAT_ID,
-             "Успех!"
+            CHAT_ID,
+            "Успех!"
         )
 
 

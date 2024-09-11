@@ -60,7 +60,10 @@ class Database():
             
             try:
                 cursor.execute("SELECT insert_message(%s)", (data,))
-            except:
+            except Exception as error:
+
+                print(error)
+
                 return 'error'
 
 
@@ -75,5 +78,8 @@ class Database():
             
             try:
                 cursor.execute("SELECT set_birthday(%s)", (data,))
-            except:
+            except Exception as error:
+
+                print(error)
+                
                 return 'error'

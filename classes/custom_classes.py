@@ -328,7 +328,7 @@ class CustomText(Base):
 
                     text_without_links = text_without_links.replace(link, "").strip()
 
-            replaced_text: str = re.sub("""[\[\]!#$%^*=–(){}+<>'~`,.?"№_\-—:\\\|/:;\d]""", "", text_without_links).lower().strip()
+            replaced_text: str = re.sub("""[\[\]!#$%^*=–(){}+«»<>'~`,.?"№_\-—:\\\|/:;\d]""", "", text_without_links).lower().strip()
 
             self.words = None
 
