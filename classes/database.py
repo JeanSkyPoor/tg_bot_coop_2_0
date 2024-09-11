@@ -2,6 +2,7 @@ import psycopg2
 from configparser import ConfigParser
 import psycopg2.pool
 from contextlib import contextmanager
+import logging
 
 
 
@@ -62,7 +63,7 @@ class Database():
                 cursor.execute("SELECT insert_message(%s)", (data,))
             except Exception as error:
 
-                print(error)
+                logging.exception(error)
 
                 return 'error'
 
@@ -80,6 +81,6 @@ class Database():
                 cursor.execute("SELECT set_birthday(%s)", (data,))
             except Exception as error:
 
-                print(error)
-                
+                logging.exception(error)
+
                 return 'error'
