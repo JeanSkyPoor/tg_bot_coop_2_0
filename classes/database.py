@@ -84,3 +84,22 @@ class Database():
                 logging.exception(error)
 
                 return 'error'
+
+
+
+
+    def return_user_timeoff(self) -> str:
+
+        with self.get_cursor() as cursor:
+            
+            try:
+                cursor.execute("SELECT return_user_timeoff()")
+
+                return cursor.fetchone()[0]
+            
+            except Exception as error:
+
+                logging.exception(error)
+
+                return 'error'
+

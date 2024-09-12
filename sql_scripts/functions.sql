@@ -481,3 +481,20 @@ CREATE OR REPLACE FUNCTION set_birthday(
 	WHERE
 		user_id_tg = (data->'reply_to_message'->'user'->>'id')::INTEGER;
 $$ LANGUAGE SQL;
+
+
+
+
+CREATE OR REPLACE FUNCTION return_user_timeoff()
+RETURNS json AS $$
+
+	SELECT
+		json_agg(row_to_json(row))
+	FROM (
+		SELECT
+			full_name AS user_name
+		,	FLOOR(ABS(EXTRACT(EPOCH FROM NOW() - last_update)/3600)) AS timeoff
+		FROM
+			users
+	) row;
+$$ LANGUAGE SQL;

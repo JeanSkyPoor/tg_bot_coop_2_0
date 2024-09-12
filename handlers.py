@@ -19,6 +19,31 @@ modules = Modules()
 
 
 @router.message(
+          Command("timeoff")
+)
+async def return_user_timeoff(message: Message):
+     
+    raw_data = modules.database.return_user_timeoff()
+
+    fast_dict = {}
+
+    for user in raw_data:
+        fast_dict[user.get("user_name")] = user.get("timeoff")
+
+    text = "Итак, адыхающие: \n"
+
+    for key, value in fast_dict.items():
+        
+        text = text + f"{key}: {value} часа назад\n"
+
+    await bot.send_message(
+        CHAT_ID,
+        text = text
+    )
+
+
+
+@router.message(
         Command("birthday")
 )
 async def set_birthday(message: Message):
