@@ -361,13 +361,11 @@ CREATE OR REPLACE FUNCTION insert_into_forward_from_user(
 	message_id INTEGER
 ,	user_part JSON
 ) RETURNS void AS $$
-
-	SELECT insert_into_users(user_part);
 	
 	INSERT INTO forward_from_user
 	VALUES(
 		message_id
-	,	(user_part->>'id')::INTEGER
+	,	(user_part->>'id')::BIGINT
 	);
 $$ LANGUAGE SQL;
 

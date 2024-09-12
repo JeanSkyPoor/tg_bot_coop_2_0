@@ -117,7 +117,7 @@ CREATE TABLE message_word(
 DROP TABLE IF EXISTS forward_from_user CASCADE;
 CREATE TABLE forward_from_user(
 	message_id INTEGER
-,	user_id_tg INTEGER
+,	user_id_tg BIGINT
 ,	CONSTRAINT fk_message_id FOREIGN KEY(message_id) REFERENCES messages(message_id)
 ,	CONSTRAINT fk_user_id_tg FOREIGN KEY(user_id_tg) REFERENCES users(user_id_tg)
 );
