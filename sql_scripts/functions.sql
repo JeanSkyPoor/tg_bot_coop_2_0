@@ -485,22 +485,6 @@ $$ LANGUAGE SQL;
 
 
 
--- CREATE OR REPLACE FUNCTION return_user_timeoff()
--- RETURNS json AS $$
-
--- 	SELECT
--- 		json_agg(row_to_json(row))
--- 	FROM (
--- 		SELECT
--- 			full_name AS user_name
--- 		,	FLOOR(ABS(EXTRACT(EPOCH FROM NOW() - last_update)/3600)) AS timeoff
--- 		FROM
--- 			users
--- 	) row;
--- $$ LANGUAGE SQL;
-
-
-
 CREATE OR REPLACE FUNCTION return_user_timeoff()
 RETURNS json AS $$
 
@@ -519,6 +503,7 @@ RETURNS json AS $$
 			,	ROUND(EXTRACT(EPOCH FROM NOW() - last_update)/60) AS timeoff_minutes
 			FROM
 				users
+			ORDER BY timeoff_minutes
 		) AS t
 	) AS row
 $$ LANGUAGE SQL;

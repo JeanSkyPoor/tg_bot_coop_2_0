@@ -30,11 +30,11 @@ async def return_user_timeoff(message: Message):
     for user in raw_data:
         fast_dict[user.get("full_name")] = user.get("timeoff")
 
-    text = "Итак, адыхающие: \n"
+    text = "Итак, адыхающие: \n\n"
 
     for key, value in fast_dict.items():
         
-        text = text + f"{key}: {value}\n"
+        text = text + f"{key}: {value}\n\n"
 
     await bot.send_message(
         CHAT_ID,
