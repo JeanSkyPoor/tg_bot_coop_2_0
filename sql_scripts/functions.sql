@@ -485,6 +485,22 @@ $$ LANGUAGE SQL;
 
 
 
+-- CREATE OR REPLACE FUNCTION return_user_timeoff()
+-- RETURNS json AS $$
+
+-- 	SELECT
+-- 		json_agg(row_to_json(row))
+-- 	FROM (
+-- 		SELECT
+-- 			full_name AS user_name
+-- 		,	FLOOR(ABS(EXTRACT(EPOCH FROM NOW() - last_update)/3600)) AS timeoff
+-- 		FROM
+-- 			users
+-- 	) row;
+-- $$ LANGUAGE SQL;
+
+
+
 CREATE OR REPLACE FUNCTION return_user_timeoff()
 RETURNS json AS $$
 
@@ -492,9 +508,18 @@ RETURNS json AS $$
 		json_agg(row_to_json(row))
 	FROM (
 		SELECT
-			full_name AS user_name
-		,	FLOOR(ABS(EXTRACT(EPOCH FROM NOW() - last_update)/3600)) AS timeoff
-		FROM
-			users
-	) row;
+			full_name
+		,	CASE
+				WHEN timeoff_minutes <= 60 THEN CONCAT(timeoff_minutes, ' ', 'минут назад')
+				ELSE CONCAT(ROUND(timeoff_minutes/60)::TEXT, ' ', 'часов назад')
+			END AS timeoff
+		FROM (
+			SELECT
+				full_name
+			,	ROUND(EXTRACT(EPOCH FROM NOW() - last_update)/60) AS timeoff_minutes
+			FROM
+				users
+		) AS t
+	) AS row
 $$ LANGUAGE SQL;
+
