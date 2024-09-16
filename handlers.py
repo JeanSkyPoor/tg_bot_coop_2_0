@@ -100,9 +100,9 @@ async def insert_message(message: Message):
     if message.chat.id != CHAT_ID:
         return
     
-    if message.content_type == "voice":
+    if message.content_type.split()[0] == "voice":
         
-        message.reply(
+        await message.reply(
             "Фу, пидор"
         )
 
