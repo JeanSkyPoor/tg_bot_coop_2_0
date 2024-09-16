@@ -99,6 +99,12 @@ async def insert_message(message: Message):
 
     if message.chat.id != CHAT_ID:
         return
+    
+    if message.content_type == "voice":
+        
+        message.reply(
+            "Фу, пидор"
+        )
 
     data = MessageParser(message).json_to_function_insert_message
 
