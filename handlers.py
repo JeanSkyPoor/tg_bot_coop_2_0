@@ -2,26 +2,35 @@ from aiogram import F, Router
 from aiogram.types import Message
 from aiogram import Bot
 from classes.modules import Modules
-from config.bot_config import TOKEN, CHAT_ID, ADMIN_ID
+from config.env import ENV
 from aiogram.filters import Command
 from classes.message_parsers import MessageParser
 
 
 router = Router()
 
-bot =  Bot(token = TOKEN)
-
-
+bot = Bot(token = ENV.bot_token)
 
 modules = Modules()
+
+
+
 
 
 @router.message(
           Command("timeoff")
 )
-async def return_user_timeoff(message: Message):
+async def return_user_timeoff():
      
     raw_data = modules.database.return_user_timeoff()
+
+    if raw_data == 'error':
+
+        await bot.send_message(
+            ENV.chat_id,
+            "@Jean_Sky_Poor, не получилось посмотреть адыхающих"
+        )
+
 
     fast_dict = {}
 
@@ -35,7 +44,7 @@ async def return_user_timeoff(message: Message):
         text = text + f"{key}: {value}\n\n"
 
     await bot.send_message(
-        CHAT_ID,
+        ENV.chat_id,
         text = text
     )
 
@@ -47,13 +56,13 @@ async def return_user_timeoff(message: Message):
 )
 async def set_birthday(message: Message):
 
-    if message.chat.id != CHAT_ID:
+    if message.chat.id != ENV.chat_id:
             return
     
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id != ENV.admin_id:
          
         await bot.send_message(
-            CHAT_ID,
+            ENV.chat_id,
             "Не для тебя моя роза цвела!!!!"
         )
     
@@ -64,14 +73,14 @@ async def set_birthday(message: Message):
     if result == "error":
 
         await bot.send_message(
-            CHAT_ID,
+            ENV.chat_id,
             "Не удалось обновить др!"
         )
 
     else:
         
         await bot.send_message(
-            CHAT_ID,
+            ENV.chat_id,
             "Успех!"
         )
 
@@ -95,7 +104,7 @@ async def set_birthday(message: Message):
 )
 async def insert_message(message: Message):
 
-    if message.chat.id != CHAT_ID:
+    if message.chat.id != ENV.chat_id:
         return
     
     if message.content_type.split()[0] == "voice":

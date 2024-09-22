@@ -1,8 +1,8 @@
 import psycopg2
-from configparser import ConfigParser
 import psycopg2.pool
 from contextlib import contextmanager
 import logging
+from config.env import ENV
 
 
 
@@ -11,29 +11,12 @@ class Database():
 
     def __init__(self) -> None:
         
-        self.read_creds()
+        # self.read_creds()
         self.connection_pool = psycopg2.pool.SimpleConnectionPool(
             1,
             10,
-            **self.creds
+            **ENV.db_params
         )
-
-
-
-
-    def read_creds(self):
-
-        parser = ConfigParser()
-
-        #Поменять на полный путь на малинке
-        parser.read("config/database.ini")
-
-        self.creds = {}
-
-        params = parser.items("postgresql")
-
-        for param in params:
-            self.creds[param[0]] = param[1]
 
 
 
