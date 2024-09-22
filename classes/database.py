@@ -1,7 +1,6 @@
 import psycopg2
 import psycopg2.pool
 from contextlib import contextmanager
-import logging
 from config.env import ENV
 
 
@@ -11,7 +10,6 @@ class Database():
 
     def __init__(self) -> None:
         
-        # self.read_creds()
         self.connection_pool = psycopg2.pool.SimpleConnectionPool(
             1,
             10,
@@ -38,17 +36,12 @@ class Database():
     def insert_message(
             self,
             data: str
-    ) -> None|str:
+    ) -> None:
 
         with self.get_cursor() as cursor:
             
-            try:
-                cursor.execute("SELECT insert_message(%s)", (data,))
-            except Exception as error:
+            cursor.execute("SELECT insert_message(%s)", (data,))
 
-                logging.exception(error)
-
-                return 'error'
 
 
 
@@ -56,17 +49,11 @@ class Database():
     def set_birthday(
             self,
             data: str
-    ) -> None|str:
+    ) -> None:
         
         with self.get_cursor() as cursor:
             
-            try:
-                cursor.execute("SELECT set_birthday(%s)", (data,))
-            except Exception as error:
-
-                logging.exception(error)
-
-                return 'error'
+            cursor.execute("SELECT set_birthday(%s)", (data,))
 
 
 
@@ -75,14 +62,6 @@ class Database():
 
         with self.get_cursor() as cursor:
             
-            try:
-                cursor.execute("SELECT return_user_timeoff()")
+            cursor.execute("SELECT return_user_timeoff()")
 
-                return cursor.fetchone()[0]
-            
-            except Exception as error:
-
-                logging.exception(error)
-
-                return 'error'
-
+            return cursor.fetchone()[0]
