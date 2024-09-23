@@ -1,6 +1,8 @@
 import asyncio
 from aiogram import Dispatcher
-from handlers import bot, router
+from init_variables import bot
+from hanblers.commands import router as command_router
+from hanblers.messages import router as message_router
 
 dp = Dispatcher()
 
@@ -9,7 +11,8 @@ dp = Dispatcher()
 
 async def main():
 
-    dp.include_router(router)
+    dp.include_router(command_router)
+    dp.include_router(message_router)
 
     await dp.start_polling(bot)
 
