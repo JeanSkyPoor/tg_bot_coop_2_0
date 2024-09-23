@@ -94,7 +94,7 @@ async def set_birthday(message: Message):
             e
         )
 
-        bot.send_message(
+        await bot.send_message(
             ENV.chat_id,
             "Что-то пошло не так, чекай логи"
         )
