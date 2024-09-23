@@ -93,3 +93,8 @@ async def set_birthday(message: Message):
         logging.exception(
             e
         )
+
+        bot.send_message(
+            ENV.chat_id,
+            "Что-то пошло не так, чекай логи"
+        )
