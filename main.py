@@ -1,8 +1,8 @@
 import asyncio
 from aiogram import Dispatcher
 from init_variables import bot
-from hanblers.commands import router as command_router
-from hanblers.messages import router as message_router
+from handlers.commands import router as command_router
+from handlers.messages import router as message_router
 
 dp = Dispatcher()
 

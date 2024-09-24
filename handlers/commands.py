@@ -98,3 +98,16 @@ async def set_birthday(message: Message):
             ENV.chat_id,
             "Что-то пошло не так, чекай логи"
         )
+
+
+
+
+@router.message(
+          Command("ping")
+)
+async def ping_bot(message: Message):
+
+    await bot.send_message(
+        ENV.chat_id,
+        "Хуле доебался до меня?"
+    )
