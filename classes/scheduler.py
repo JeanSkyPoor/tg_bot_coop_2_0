@@ -6,4 +6,10 @@ scheduler = AsyncIOScheduler()
 
 
 
-scheduler.add_job(return_user_timeoff, 'cron', day_of_week='mon-sun', hour = 13, minute = 0)
+scheduler.add_job(
+    return_user_timeoff, 
+    'cron', 
+    day_of_week='mon-sun', 
+    hour = 8, 
+    minute = 0
+)
