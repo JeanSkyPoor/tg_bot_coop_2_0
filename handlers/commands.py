@@ -20,11 +20,13 @@ router = Router(
 @router.message(
           Command("timeoff")
 )
-async def return_user_timeoff(*args):
+async def return_user_timeoff(message: Message = None):
 
     try:
-        # modules.check.check_chat_id(message)
         
+        if message:
+            modules.check.check_chat_id(message)
+
         raw_data = modules.database.return_user_timeoff()
 
         fast_dict = {}
