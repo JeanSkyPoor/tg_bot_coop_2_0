@@ -1,10 +1,10 @@
-from aiogram.filters import Command
+import logging
 from aiogram import Router
+from aiogram.filters import Command
 from aiogram.types import Message
 from init_variables import modules, bot
 from config.env import ENV
 from classes.exception import PassException, AdminException
-import logging
 from classes.message_parsers import MessageParser
 
 
@@ -20,11 +20,11 @@ router = Router(
 @router.message(
           Command("timeoff")
 )
-async def return_user_timeoff(message: Message):
+async def return_user_timeoff(*args):
 
     try:
-        modules.check.check_chat_id(message)
-     
+        # modules.check.check_chat_id(message)
+        
         raw_data = modules.database.return_user_timeoff()
 
         fast_dict = {}

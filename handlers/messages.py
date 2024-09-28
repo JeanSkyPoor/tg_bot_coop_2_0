@@ -1,9 +1,9 @@
+import logging
 from aiogram import Router, F
 from aiogram.types import Message
 from init_variables import modules
 from config.env import ENV
 from classes.exception import PassException
-import logging
 from classes.message_parsers import MessageParser
 
 
