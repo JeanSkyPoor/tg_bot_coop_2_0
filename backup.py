@@ -29,10 +29,3 @@ def make_backup():
 > {ENV.backups_path}\{filename}"""
 
     os.system(command)
-
-
-
-
-if __name__ == "__main__":
-
-    make_backup()
