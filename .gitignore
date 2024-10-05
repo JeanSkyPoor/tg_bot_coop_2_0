@@ -3,5 +3,5 @@ config/database.ini
 __pycache__
 __pycache__
 main.ipynb
-backup.py
 env.py
+backups
