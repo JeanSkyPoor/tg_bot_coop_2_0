@@ -18,7 +18,7 @@ def make_backup():
     if any(files):
 
         for file in files:
-            os.remove(f"{ENV.backups_path}\{file}")
+            os.remove(f"{ENV.backups_path}/{file}")
 
 
     command = f"""pg_dump postgresql://{ENV.db_params.get('user')}\
@@ -26,6 +26,6 @@ def make_backup():
 @{ENV.db_params.get('host')}\
 :{ENV.db_params.get('port')}\
 /{ENV.db_params.get('database')} \
-> {ENV.backups_path}\{filename}"""
+> {ENV.backups_path}/{filename}"""
 
     os.system(command)
