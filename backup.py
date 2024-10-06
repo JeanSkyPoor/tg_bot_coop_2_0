@@ -13,19 +13,28 @@ def make_backup():
 
         os.mkdir(ENV.backups_path)
     
-    files = os.listdir(ENV.backups_path)
+    for _ in range(3):
 
-    if any(files):
+        command = f"pg_dump postgresql://{ENV.db_params.get('user')}" + \
+        f":{ENV.db_params.get('password')}" + \
+        f"@{ENV.db_params.get('host')}" + \
+        f":{ENV.db_params.get('port')}" + \
+        f"/{ENV.db_params.get('database')} " + \
+        f"> {ENV.backups_path}/{filename}"
 
-        for file in files:
-            os.remove(f"{ENV.backups_path}/{file}")
+        os.system(command)
 
+        backup_files = sorted(os.listdir(ENV.backups_path))
 
-    command = f"""pg_dump postgresql://{ENV.db_params.get('user')}\
-:{ENV.db_params.get('password')}\
-@{ENV.db_params.get('host')}\
-:{ENV.db_params.get('port')}\
-/{ENV.db_params.get('database')} \
-> {ENV.backups_path}/{filename}"""
+        if filename not in backup_files:
+            continue
+        else:
+            if len(backup_files) > 3:
 
-    os.system(command)
+                for _ in range(3):
+                    backup_files.pop()
+
+                for file in backup_files:
+
+                    os.remove(f"{ENV.backups_path}/{file}")
+            break
