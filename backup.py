@@ -27,14 +27,18 @@ def make_backup():
         backup_files = sorted(os.listdir(ENV.backups_path))
 
         if filename not in backup_files:
+
             continue
+
         else:
+
             if len(backup_files) > 3:
 
                 for _ in range(3):
+
                     backup_files.pop()
 
                 for file in backup_files:
-
+                    
                     os.remove(f"{ENV.backups_path}/{file}")
             break

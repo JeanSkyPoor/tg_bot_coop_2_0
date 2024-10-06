@@ -508,3 +508,18 @@ RETURNS json AS $$
 	) AS row
 $$ LANGUAGE SQL;
 
+
+
+
+CREATE OR REPLACE FUNCTION return_birthday_customers()
+RETURNS json AS $$
+
+	SELECT
+		json_agg(full_name) 
+	FROM
+		users
+	WHERE
+		EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE)
+		AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE);
+		
+$$ LANGUAGE SQL;

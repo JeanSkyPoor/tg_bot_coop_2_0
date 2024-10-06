@@ -65,3 +65,14 @@ class Database():
             cursor.execute("SELECT return_user_timeoff()")
 
             return cursor.fetchone()[0]
+    
+
+
+
+    def return_birthday_customers(self) -> str:
+
+        with self.get_cursor() as cursor:
+            
+            cursor.execute("SELECT return_birthday_customers()")
+
+            return cursor.fetchone()[0]
