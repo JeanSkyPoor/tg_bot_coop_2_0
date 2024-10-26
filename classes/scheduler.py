@@ -43,11 +43,11 @@ async def send_message_info_day_before():
 
     if message_info:
 
-        text = ""
+        text = "За вчера: \n\n"
 
         for user in message_info:
  
-            text = text + f"""Юзверь {user.get("full_name")} отправил {user.get("day_messages")} сообщений на {user.get("day_words")} слов\n"""
+            text = text + f"""{user.get("full_name")} отправил {user.get("day_messages")} сообщений на {user.get("day_words")} слов;\n\n"""
 
     await bot.send_message(
         ENV.chat_id,
@@ -84,6 +84,6 @@ scheduler.add_job(
     send_message_info_day_before,
     "cron",
     day_of_week = 'mon-sun',
-    hour = 17,
-    minute = 30
+    hour = 7,
+    minute = 0 
 )

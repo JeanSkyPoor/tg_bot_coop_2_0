@@ -534,10 +534,7 @@ RETURNS json AS $$
 		json_agg(row_to_json(row))
 	FROM (
 		SELECT
-			CASE
-				WHEN u.full_name IS NULL THEN 'Totals'
-				ELSE u.full_name
-			END AS full_name
+			u.full_name AS full_name
 		,	COUNT(*) AS day_messages
 		,	SUM(w.word_count) AS day_words
 		FROM
@@ -551,7 +548,7 @@ RETURNS json AS $$
 		WHERE
 			m.type_id IN (1, 2)
 			AND DATE(m."date") = DATE(NOW()::timestamp - INTERVAL '1' DAY)
-		GROUP BY ROLLUP(full_name)
+		GROUP BY full_name
 		ORDER BY day_messages DESC
 	) AS row;
 
