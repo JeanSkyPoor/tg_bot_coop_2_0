@@ -523,3 +523,36 @@ RETURNS json AS $$
 		AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE);
 		
 $$ LANGUAGE SQL;
+
+
+
+
+CREATE OR REPLACE FUNCTION return_message_info_day_before()
+RETURNS json AS $$
+
+	SELECT
+		json_agg(row_to_json(row))
+	FROM (
+		SELECT
+			CASE
+				WHEN u.full_name IS NULL THEN 'Totals'
+				ELSE u.full_name
+			END AS full_name
+		,	COUNT(*) AS day_messages
+		,	SUM(w.word_count) AS day_words
+		FROM
+			messages AS m
+		JOIN
+			users AS u
+			ON m.user_id_tg = u.user_id_tg
+		LEFT JOIN
+			message_word AS w
+			ON m.message_id = w.message_id
+		WHERE
+			m.type_id IN (1, 2)
+			AND DATE(m."date") = DATE(NOW()::timestamp - INTERVAL '1' DAY)
+		GROUP BY ROLLUP(full_name)
+		ORDER BY day_messages DESC
+	) AS row;
+
+$$ LANGUAGE SQL;

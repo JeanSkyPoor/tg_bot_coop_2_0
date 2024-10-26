@@ -58,7 +58,7 @@ class Database():
 
 
 
-    def return_user_timeoff(self) -> str:
+    def return_user_timeoff(self) -> list:
 
         with self.get_cursor() as cursor:
             
@@ -69,10 +69,21 @@ class Database():
 
 
 
-    def return_birthday_customers(self) -> str:
+    def return_birthday_customers(self) -> list | None:
 
         with self.get_cursor() as cursor:
             
             cursor.execute("SELECT return_birthday_customers()")
+
+            return cursor.fetchone()[0]
+
+
+
+
+    def return_message_info_day_before(self) -> list | None:
+
+        with self.get_cursor() as cursor:
+
+            cursor.execute("SELECT return_message_info_day_before()")
 
             return cursor.fetchone()[0]

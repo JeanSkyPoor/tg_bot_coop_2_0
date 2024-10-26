@@ -35,6 +35,27 @@ async def notify_about_birthday_customers():
 
 
 
+async def send_message_info_day_before():
+
+    message_info = modules.database.return_message_info_day_before()
+
+    text = "Упс. Вчера никто ничего не писал. Возможно, оно и к лучшему"
+
+    if message_info:
+
+        text = ""
+
+        for user in message_info:
+ 
+            text = text + f"""Юзверь {user.get("full_name")} отправил {user.get("day_messages")} сообщений на {user.get("day_words")} слов\n"""
+
+    await bot.send_message(
+        ENV.chat_id,
+        text
+    )
+
+
+
 scheduler.add_job(
     return_user_timeoff, 
     'cron', 
@@ -57,4 +78,12 @@ scheduler.add_job(
     day_of_week = 'mon-sun',
     hour = 6,
     minute = 0
+)
+
+scheduler.add_job(
+    send_message_info_day_before,
+    "cron",
+    day_of_week = 'mon-sun',
+    hour = 17,
+    minute = 30
 )
